@@ -9,8 +9,7 @@ use wordle::model::{Message, Model, RunningState};
 pub mod tui;
 pub mod wordle;
 
-#[tokio::main]
-async fn main() -> color_eyre::Result<()> {
+fn main() -> color_eyre::Result<()> {
     color_eyre::install()?;
 
     tui::install_panic_hook();
