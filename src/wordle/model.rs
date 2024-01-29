@@ -19,7 +19,10 @@ pub enum RunningState {
 pub enum Message {
     Listen(char),
     Erase,
-    Calculate,
+    CalculateStart,
+    Animate(usize, Vec<LetterStatus>),
+    SleepFor(u64, Box<Message>),
+    CalculateEnd,
     Reset,
     Quit,
 }
