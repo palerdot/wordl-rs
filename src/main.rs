@@ -9,7 +9,8 @@ use wordle::model::{Message, Model, RunningState};
 pub mod tui;
 pub mod wordle;
 
-fn main() -> color_eyre::Result<()> {
+#[tokio::main]
+async fn main() -> color_eyre::Result<()> {
     color_eyre::install()?;
 
     tui::install_panic_hook();
@@ -30,15 +31,7 @@ fn main() -> color_eyre::Result<()> {
 
         // update if there is a message
         while current_msg.is_some() {
-            match current_msg.unwrap() {
-                Message::SleepFor(sleep_time, next_msg) => {
-                    current_msg = update(&mut model, *next_msg);
-                    std::thread::sleep(Duration::from_millis(sleep_time));
-                }
-                msg => {
-                    current_msg = update(&mut model, msg);
-                }
-            }
+            current_msg = update(&mut model, current_msg.unwrap());
         }
     }
 
@@ -62,17 +55,7 @@ fn update(model: &mut Model, msg: Message) -> Option<Message> {
                 model.active_guess = updated_guess;
             }
         }
-        Message::Erase => {
-            // we will listen only if it is in waiting state
-            if model.running_state != RunningState::Waiting {
-                return None;
-            }
-
-            if model.active_guess.len() > 0 {
-                model.active_guess.pop();
-            }
-        }
-        Message::CalculateStart => {
+        Message::Calculate => {
             // start calculation only if the guess has 5 letters
             if model.active_guess.len() != 5 {
                 return None;
@@ -88,37 +71,13 @@ fn update(model: &mut Model, msg: Message) -> Option<Message> {
             // insert empty vector
             model.guesses.insert(latest_position, Vec::new());
 
-            return Some(Message::Animate(0, guess));
-        }
-        Message::Animate(current_index, guess) => {
-            if current_index < guess.len() {
-                let latest_guess_position = model.guesses.len() - 1;
-                if let Some(current_guess) = model.guesses.get_mut(latest_guess_position) {
-                    let guess_letter = guess.get(current_index).unwrap();
+            for guess_letter in &guess {
+                if let Some(current) = model.guesses.get_mut(latest_position) {
                     // sleep and insert for reveal animation
-                    current_guess.push(guess_letter.clone());
-
-                    return Some(Message::SleepFor(
-                        314,
-                        Box::new(Message::Animate(current_index + 1, guess)),
-                    ));
-                    // return Some(Message::Animate(current_index + 1, guess));
-                    //
-                    // *current_guess = guess.clone();
-
-                    // return Some(Message::CalculateEnd);
-
-                    // return Some(Message::SleepFor(1314, Box::new(Message::CalculateEnd)));
-                } else {
-                    return Some(Message::CalculateEnd);
+                    std::thread::sleep(Duration::from_millis(314));
+                    current.push(guess_letter.clone());
                 }
             }
-        }
-        //  sleep for is intended for render loop
-        Message::SleepFor(..) => {}
-
-        Message::CalculateEnd => {
-            let guess = model.guesses.last().unwrap();
 
             let is_correct_guess = wordle::utils::is_correct_guess(guess.clone());
             let is_attempts_over = model.guesses.len() == 6;
@@ -128,6 +87,16 @@ fn update(model: &mut Model, msg: Message) -> Option<Message> {
                 model.running_state = RunningState::Over;
             } else {
                 model.running_state = RunningState::Waiting;
+            }
+        }
+        Message::Erase => {
+            // we will listen only if it is in waiting state
+            if model.running_state != RunningState::Waiting {
+                return None;
+            }
+
+            if model.active_guess.len() > 0 {
+                model.active_guess.pop();
             }
         }
         Message::Reset => {}
@@ -190,7 +159,7 @@ fn handle_key(key: event::KeyEvent) -> Option<Message> {
             }
         }
         KeyCode::Backspace | KeyCode::Delete => Some(Message::Erase),
-        KeyCode::Enter => Some(Message::CalculateStart),
+        KeyCode::Enter => Some(Message::Calculate),
         _code => None,
     }
 }
