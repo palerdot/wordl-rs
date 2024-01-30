@@ -1,4 +1,4 @@
-use super::model::{LetterState, LetterStatus};
+use super::model::{KeyboardHints, LetterState, LetterStatus};
 
 // wordle is compared with incoming string and each character is parsed for its correctness.
 // There are three cases - correct position, incorrect position, unknown (not present etc)
@@ -75,6 +75,37 @@ pub fn check(wordle: String, guess: String) -> Vec<LetterStatus> {
 
 pub fn is_correct_guess(input: Vec<LetterStatus>) -> bool {
     input.iter().all(|x| x.status == LetterState::Correct)
+}
+
+// helper function to update keyboard hints
+pub fn update_keyboard_hints<'a>(
+    hints: &'a mut KeyboardHints,
+    statuses: Vec<LetterStatus>,
+) -> &'a mut KeyboardHints {
+    for status in statuses {
+        // if the key is not present; just update with the value
+        if !hints.contains_key(&status.letter) {
+            hints.insert(status.letter.clone(), status.status.clone());
+        } else {
+            // key is present; based on the status we have to match stuff
+            match status.status {
+                LetterState::Unknown | LetterState::NotPresent | LetterState::Correct => {
+                    hints.insert(status.letter.clone(), status.status.clone());
+                }
+                LetterState::Incorrect => {
+                    // incorrect is a special case; if the existing value is already "correct" we
+                    // have to leave as is; else just update the value
+                    if let Some(current_status) = hints.get(&status.letter) {
+                        if *current_status != LetterState::Correct {
+                            hints.insert(status.letter.clone(), status.status.clone());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    hints
 }
 
 #[cfg(test)]

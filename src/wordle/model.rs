@@ -1,9 +1,14 @@
+use std::collections::HashMap;
+
+pub type KeyboardHints = HashMap<char, LetterState>;
+
 #[derive(Debug, Default)]
 pub struct Model {
     pub wordle: String,
     pub active_guess: String,
     pub guesses: Vec<Vec<LetterStatus>>,
     pub running_state: RunningState,
+    pub keyboard_hints: KeyboardHints,
 }
 
 #[derive(Debug, PartialEq, Eq)]
