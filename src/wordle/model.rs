@@ -15,11 +15,13 @@ pub enum RunningState {
     Done,
 }
 
-#[derive(PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Message {
     Listen(char),
     Erase,
-    Calculate,
+    CalculateStart,
+    AnimateGuess(usize, Vec<LetterStatus>),
+    CalculateEnd(Vec<LetterStatus>),
     Reset,
     Quit,
 }

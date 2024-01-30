@@ -1,13 +1,11 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-// use std::sync::{Arc, Mutex};
-// use std::thread;
-use std::time::Duration;
 use wordle::model::{Message, Model, RunningState};
 
+use crate::events::EventHandler;
 use crate::wordle;
 // use crate::wordle::model::{LetterState, LetterStatus};
 
-fn update_model(model: &mut Model, msg: Message) {
+pub async fn update(model: &mut Model, msg: Message, event_handler: &EventHandler) {
     match msg {
         Message::Listen(letter) => {
             // we will listen only if it is in waiting state
@@ -23,7 +21,7 @@ fn update_model(model: &mut Model, msg: Message) {
                 model.active_guess = updated_guess;
             }
         }
-        Message::Calculate => {
+        Message::CalculateStart => {
             // start calculation only if the guess has 5 letters
             if model.active_guess.len() != 5 {
                 return;
@@ -39,14 +37,33 @@ fn update_model(model: &mut Model, msg: Message) {
             // // insert empty vector
             model.guesses.insert(latest_position, Vec::new());
 
-            for guess_letter in &guess {
+            event_handler
+                .send_delayed_message(515, Message::AnimateGuess(0, guess))
+                .await;
+        }
+
+        Message::AnimateGuess(guess_position, guess) => {
+            if guess_position >= guess.len() {
+                event_handler
+                    .send_delayed_message(314, Message::CalculateEnd(guess))
+                    .await;
+            } else {
+                let latest_position = model.guesses.len() - 1;
+
                 if let Some(current) = model.guesses.get_mut(latest_position) {
-                    // sleep and insert for reveal animation
-                    std::thread::sleep(Duration::from_millis(314));
-                    current.push(guess_letter.clone());
+                    if let Some(guess_letter) = guess.get(guess_position) {
+                        current.push(guess_letter.clone());
+                        event_handler
+                            .send_delayed_message(
+                                515,
+                                Message::AnimateGuess(guess_position + 1, guess),
+                            )
+                            .await;
+                    }
                 }
             }
-
+        }
+        Message::CalculateEnd(guess) => {
             let is_correct_guess = wordle::utils::is_correct_guess(guess.clone());
             let is_attempts_over = model.guesses.len() == 6;
             let is_over = is_correct_guess || is_attempts_over;
@@ -57,6 +74,7 @@ fn update_model(model: &mut Model, msg: Message) {
                 model.running_state = RunningState::Waiting;
             }
         }
+
         Message::Erase => {
             // we will listen only if it is in waiting state
             if model.running_state != RunningState::Waiting {
@@ -74,8 +92,8 @@ fn update_model(model: &mut Model, msg: Message) {
     }
 }
 
-pub fn update(model: &mut Model, key_event: KeyEvent) {
-    let msg = match key_event.code {
+pub fn handle_key_event(key_event: KeyEvent) -> Option<Message> {
+    match key_event.code {
         // https://ratatui.rs/templates/async/config-rs/
         KeyCode::Char('n') if key_event.modifiers.contains(KeyModifiers::CONTROL) => {
             Some(Message::Reset)
@@ -90,11 +108,7 @@ pub fn update(model: &mut Model, key_event: KeyEvent) {
             }
         }
         KeyCode::Backspace | KeyCode::Delete => Some(Message::Erase),
-        KeyCode::Enter => Some(Message::Calculate),
+        KeyCode::Enter => Some(Message::CalculateStart),
         _code => None,
-    };
-
-    if let Some(message) = msg {
-        update_model(model, message);
     }
 }

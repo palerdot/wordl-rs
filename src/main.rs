@@ -4,7 +4,7 @@ use ratatui::{backend::CrosstermBackend, Terminal};
 
 use events::{Event, EventHandler};
 use tui::Tui;
-use update::update;
+use update::{handle_key_event, update};
 use wordle::model::{Model, RunningState};
 
 pub mod events;
@@ -35,6 +35,7 @@ async fn run() -> color_eyre::Result<(), Box<dyn std::error::Error>> {
     let backend = CrosstermBackend::new(std::io::stderr());
     let terminal = Terminal::new(backend)?;
     let events = EventHandler::new(250);
+
     let mut tui = Tui::new(terminal, events);
     tui.enter()?;
 
@@ -45,7 +46,14 @@ async fn run() -> color_eyre::Result<(), Box<dyn std::error::Error>> {
         // Handle events (we will sending tick events periodically)
         match tui.events.next().await? {
             Event::Tick => {}
-            Event::Key(key_event) => update(&mut model, key_event),
+            Event::Key(key_event) => {
+                if let Some(message) = handle_key_event(key_event) {
+                    update(&mut model, message, &tui.events).await;
+                }
+            }
+            Event::StateUpdate(message) => {
+                update(&mut model, message, &tui.events).await;
+            }
             Event::Mouse(_) => {}
             Event::Resize(_, _) => {}
         }

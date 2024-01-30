@@ -4,13 +4,17 @@ use futures::{FutureExt, StreamExt};
 use std::time::Duration;
 use tokio::sync::mpsc;
 
+use crate::wordle::model::Message;
+
 /// terminal events
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub enum Event {
     /// Terminal tick
     Tick,
     /// Keyboard events
     Key(KeyEvent),
+    /// Handle state updates directly
+    StateUpdate(Message),
     /// Mouse events
     Mouse(MouseEvent),
     /// resize events
@@ -89,5 +93,15 @@ impl EventHandler {
                 std::io::ErrorKind::Other,
                 "This is an IO error",
             )))
+    }
+
+    // send delayed state update message
+    pub async fn send_delayed_message(&self, delay: u64, message: Message) {
+        let sender = self.sender.clone();
+
+        tokio::spawn(async move {
+            tokio::time::sleep(Duration::from_millis(delay)).await;
+            sender.send(Event::StateUpdate(message)).unwrap();
+        });
     }
 }
