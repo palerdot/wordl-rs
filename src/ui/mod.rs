@@ -1,10 +1,10 @@
 use ratatui::{
-    prelude::{Alignment, Frame},
-    style::{Color, Style},
+    prelude::{Alignment, Frame, Span},
+    style::{Color, Style, Stylize},
     widgets::Block,
 };
 
-use crate::wordle::model::Model;
+use crate::wordle::model::{GameResult, Model, RunningState};
 
 mod grid;
 mod keyboard;
@@ -13,18 +13,11 @@ mod layout;
 // [ELM VIEW] view is a function of model
 pub fn view(model: &mut Model, f: &mut Frame) {
     let block = Block::default()
-        // .title("Block")
-        .title(format!(
-            "Porumai {} {} {}",
-            model.wordle,
-            model.guesses.len(),
-            model.active_guess
-        ))
+        .title(format!("WORDL: {}", model.wordle,))
         .title_alignment(Alignment::Center)
-        // .borders(Borders::LEFT | Borders::RIGHT | Borders::TOP | Borders::BOTTOM)
         .border_style(Style::default().fg(Color::White))
-        // .border_type(BorderType::Rounded)
-        .style(Style::default().bg(Color::Rgb(0, 0, 0)));
+        .style(Style::default().white().bg(Color::Rgb(0, 0, 0)))
+        .title(get_status(model));
 
     let master_layout = layout::master_layout(f);
 
@@ -36,5 +29,54 @@ pub fn view(model: &mut Model, f: &mut Frame) {
     if master_layout.len() == 2 {
         // keyboard layout
         keyboard::draw(f, master_layout[1]);
+    }
+}
+
+fn get_status(model: &mut Model) -> Span {
+    let step = model.guesses.len();
+
+    match &model.running_state {
+        RunningState::Waiting => Span::styled(
+            format!("{}/6 - Enter your guess", step),
+            Style::default()
+                .fg(Color::Rgb(255, 255, 0))
+                .bg(Color::Rgb(0, 0, 0)),
+        ),
+        RunningState::Calculating => Span::styled(
+            format!("{}/6 - Checking", step),
+            Style::default()
+                .fg(Color::Rgb(255, 255, 0))
+                .bg(Color::Rgb(0, 0, 0)),
+        ),
+        RunningState::Over(result) => {
+            let is_correct = if *result == GameResult::CorrectGuess {
+                true
+            } else {
+                false
+            };
+
+            let answer = model.wordle.to_uppercase().to_string();
+
+            Span::styled(
+                if is_correct {
+                    "Correct 😇".into()
+                } else {
+                    format!("{} is the correct word", answer)
+                },
+                Style::default()
+                    .fg(if is_correct {
+                        Color::Rgb(0, 255, 0)
+                    } else {
+                        Color::Rgb(255, 0, 0)
+                    })
+                    .bg(Color::Rgb(0, 0, 0)),
+            )
+        }
+        _ => Span::styled(
+            "",
+            Style::default()
+                .fg(Color::Rgb(0, 255, 0))
+                .bg(Color::Rgb(0, 0, 0)),
+        ),
     }
 }

@@ -6,12 +6,18 @@ pub struct Model {
     pub running_state: RunningState,
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum GameResult {
+    CorrectGuess,
+    WrongGuess,
+}
+
 #[derive(Debug, Default, PartialEq, Eq)]
 pub enum RunningState {
     #[default]
     Waiting,
     Calculating,
-    Over,
+    Over(GameResult),
     Done,
 }
 

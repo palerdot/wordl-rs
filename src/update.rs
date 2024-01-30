@@ -3,6 +3,7 @@ use wordle::model::{Message, Model, RunningState};
 
 use crate::events::EventHandler;
 use crate::wordle;
+use crate::wordle::model::GameResult;
 // use crate::wordle::model::{LetterState, LetterStatus};
 
 pub async fn update(model: &mut Model, msg: Message, event_handler: &EventHandler) {
@@ -69,7 +70,11 @@ pub async fn update(model: &mut Model, msg: Message, event_handler: &EventHandle
             let is_over = is_correct_guess || is_attempts_over;
 
             if is_over {
-                model.running_state = RunningState::Over;
+                model.running_state = RunningState::Over(if is_correct_guess {
+                    GameResult::CorrectGuess
+                } else {
+                    GameResult::WrongGuess
+                });
             } else {
                 model.running_state = RunningState::Waiting;
             }
