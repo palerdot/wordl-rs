@@ -85,14 +85,11 @@ impl EventHandler {
     }
 
     // Receives next event from the handler thread
-    pub async fn next(&mut self) -> color_eyre::Result<Event, Box<dyn std::error::Error>> {
+    pub async fn next(&mut self) -> color_eyre::Result<Event> {
         self.receiver
             .recv()
             .await
-            .ok_or(Box::new(std::io::Error::new(
-                std::io::ErrorKind::Other,
-                "This is an IO error",
-            )))
+            .ok_or(color_eyre::eyre::eyre!("Unable to get event"))
     }
 
     // send delayed state update message

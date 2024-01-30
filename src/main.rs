@@ -14,7 +14,7 @@ pub mod update;
 pub mod wordle;
 
 #[tokio::main]
-async fn main() -> color_eyre::Result<(), Box<dyn std::error::Error>> {
+async fn main() -> color_eyre::Result<()> {
     color_eyre::install()?;
     let result = run().await;
     result?;
@@ -22,7 +22,7 @@ async fn main() -> color_eyre::Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-async fn run() -> color_eyre::Result<(), Box<dyn std::error::Error>> {
+async fn run() -> color_eyre::Result<()> {
     // TEA - The ELM architecture
     // Model | Update | View
     let mut model = Model::default();
