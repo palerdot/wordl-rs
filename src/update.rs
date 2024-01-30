@@ -38,14 +38,14 @@ pub async fn update(model: &mut Model, msg: Message, event_handler: &EventHandle
             model.guesses.insert(latest_position, Vec::new());
 
             event_handler
-                .send_delayed_message(515, Message::AnimateGuess(0, guess))
+                .send_delayed_message(314, Message::AnimateGuess(0, guess))
                 .await;
         }
 
         Message::AnimateGuess(guess_position, guess) => {
             if guess_position >= guess.len() {
                 event_handler
-                    .send_delayed_message(314, Message::CalculateEnd(guess))
+                    .send_delayed_message(0, Message::CalculateEnd(guess))
                     .await;
             } else {
                 let latest_position = model.guesses.len() - 1;
