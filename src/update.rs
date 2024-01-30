@@ -1,8 +1,11 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use std::time::Duration;
+// use std::sync::{Arc, Mutex};
+// use std::thread;
+// use std::time::Duration;
 use wordle::model::{Message, Model, RunningState};
 
 use crate::wordle;
+// use crate::wordle::model::{LetterState, LetterStatus};
 
 fn update_model(model: &mut Model, msg: Message) {
     match msg {
@@ -33,13 +36,13 @@ fn update_model(model: &mut Model, msg: Message) {
             // reset active guess
             model.active_guess = "".into();
             let latest_position = model.guesses.len();
-            // insert empty vector
+            // // insert empty vector
             model.guesses.insert(latest_position, Vec::new());
 
             for guess_letter in &guess {
                 if let Some(current) = model.guesses.get_mut(latest_position) {
                     // sleep and insert for reveal animation
-                    std::thread::sleep(Duration::from_millis(314));
+                    // std::thread::sleep(Duration::from_millis(314));
                     current.push(guess_letter.clone());
                 }
             }
