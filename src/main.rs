@@ -13,8 +13,16 @@ pub mod ui;
 pub mod update;
 pub mod wordle;
 
-fn main() -> color_eyre::Result<()> {
+#[tokio::main]
+async fn main() -> color_eyre::Result<(), Box<dyn std::error::Error>> {
     color_eyre::install()?;
+    let result = run().await;
+    result?;
+
+    Ok(())
+}
+
+async fn run() -> color_eyre::Result<(), Box<dyn std::error::Error>> {
     // TEA - The ELM architecture
     // Model | Update | View
     let mut model = Model::default();
@@ -35,7 +43,7 @@ fn main() -> color_eyre::Result<()> {
         // render user interface
         tui.draw(&mut model)?;
         // Handle events (we will sending tick events periodically)
-        match tui.events.next()? {
+        match tui.events.next().await? {
             Event::Tick => {}
             Event::Key(key_event) => update(&mut model, key_event),
             Event::Mouse(_) => {}

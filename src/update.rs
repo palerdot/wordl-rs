@@ -1,7 +1,7 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 // use std::sync::{Arc, Mutex};
 // use std::thread;
-// use std::time::Duration;
+use std::time::Duration;
 use wordle::model::{Message, Model, RunningState};
 
 use crate::wordle;
@@ -42,7 +42,7 @@ fn update_model(model: &mut Model, msg: Message) {
             for guess_letter in &guess {
                 if let Some(current) = model.guesses.get_mut(latest_position) {
                     // sleep and insert for reveal animation
-                    // std::thread::sleep(Duration::from_millis(314));
+                    std::thread::sleep(Duration::from_millis(314));
                     current.push(guess_letter.clone());
                 }
             }
