@@ -32,7 +32,7 @@ pub fn check(wordle: String, guess: String) -> Vec<LetterStatus> {
             if !wordle_letters.contains(&guess_letter) {
                 output.push(LetterStatus {
                     letter: guess_letter,
-                    status: LetterState::Unknown,
+                    status: LetterState::NotPresent,
                 })
             } else {
                 // CASE 2: letter is present but not in the right position
@@ -63,7 +63,7 @@ pub fn check(wordle: String, guess: String) -> Vec<LetterStatus> {
                 } else {
                     output.push(LetterStatus {
                         letter: guess_letter,
-                        status: LetterState::Unknown,
+                        status: LetterState::NotPresent,
                     })
                 }
             }

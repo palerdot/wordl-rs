@@ -36,6 +36,7 @@ pub struct LetterStatus {
 pub enum LetterState {
     #[default]
     Unknown,
+    NotPresent,
     Correct,
     Incorrect,
 }
