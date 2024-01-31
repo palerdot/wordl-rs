@@ -1,12 +1,23 @@
+use rand::seq::SliceRandom;
 use std::collections::HashMap;
+
+use crate::wordle;
 
 pub type KeyboardHints = HashMap<char, LetterState>;
 
 #[derive(Debug, Default)]
 pub struct Model {
+    // main wordle word
     pub wordle: String,
+
+    // data
+    pub valid_wordles: Vec<String>,
+    pub valid_guesses: Vec<String>,
+
+    // user guesses
     pub active_guess: String,
     pub guesses: Vec<Vec<LetterStatus>>,
+
     pub running_state: RunningState,
     pub keyboard_hints: KeyboardHints,
 }
@@ -50,4 +61,24 @@ pub enum LetterState {
     NotPresent,
     Correct,
     Incorrect,
+}
+
+impl Model {
+    pub fn new() -> Self {
+        let valid_guesses = wordle::data::valid_guesses();
+        let valid_wordles = wordle::data::valid_wordles();
+        let wordle = valid_guesses
+            .choose(&mut rand::thread_rng())
+            .unwrap()
+            .to_string();
+
+        let default_model = Model::default();
+
+        Model {
+            wordle,
+            valid_guesses,
+            valid_wordles,
+            ..default_model
+        }
+    }
 }

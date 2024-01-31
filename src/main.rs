@@ -25,11 +25,7 @@ async fn main() -> color_eyre::Result<()> {
 async fn run() -> color_eyre::Result<()> {
     // TEA - The ELM architecture
     // Model | Update | View
-    let mut model = Model::default();
-
-    if let Some(wordle) = wordle::data::get_wordle() {
-        model.wordle = wordle;
-    }
+    let mut model = Model::new();
 
     // init terminal
     let backend = CrosstermBackend::new(std::io::stderr());
