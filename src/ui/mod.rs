@@ -1,7 +1,7 @@
 use ratatui::{
-    prelude::{Alignment, Color, Frame, Span},
+    prelude::{Alignment, Color, Frame, Rect, Span},
     style::{Style, Stylize},
-    widgets::Block,
+    widgets::{block::Position, Block, Paragraph},
 };
 
 use crate::wordle::model::{GameResult, LetterState, Model, RunningState};
@@ -17,14 +17,38 @@ pub fn view(model: &mut Model, f: &mut Frame) {
         .title_alignment(Alignment::Center)
         .border_style(Style::default().fg(Color::White))
         .style(Style::default().white().bg(Color::Rgb(0, 0, 0)))
-        .title(get_status(model));
+        .title(get_status(model))
+        .title_position(Position::Top);
 
     let master_layout = layout::master_layout(f);
+
+    let common_text =
+        "Type and enter the guess. Backspace to clear. Ctrl N for new wordle. Esc to quit."
+            .to_string();
+    let help_text = if master_layout.len() == 1 {
+        format!(
+            "{}. Check https://github.com/palerdot/wordl-rs for more info.",
+            common_text
+        )
+    } else {
+        common_text
+    };
+    let help_text_block = Paragraph::new(help_text).alignment(Alignment::Center);
 
     // top layout
     f.render_widget(block, master_layout[0]);
     // main grid
     grid::draw(f, master_layout[0], model);
+    // status text
+    f.render_widget(
+        help_text_block,
+        Rect {
+            x: 0,
+            y: master_layout[0].height - 1,
+            height: 5,
+            width: f.size().width - 5, // ..master_layout[0]
+        },
+    );
 
     if master_layout.len() == 2 {
         // keyboard layout
