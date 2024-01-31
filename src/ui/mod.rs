@@ -23,7 +23,7 @@ pub fn view(model: &mut Model, f: &mut Frame) {
     let master_layout = layout::master_layout(f);
 
     let common_text =
-        "Type and enter the guess. Backspace to clear. Ctrl N for new wordle. Esc to quit."
+        "Type and enter the guess. Backspace to clear. Ctrl-N for new wordle. Esc/Ctrl-C to quit."
             .to_string();
     let help_text = if master_layout.len() == 1 {
         format!(
@@ -33,7 +33,9 @@ pub fn view(model: &mut Model, f: &mut Frame) {
     } else {
         common_text
     };
-    let help_text_block = Paragraph::new(help_text).alignment(Alignment::Center);
+    let help_text_block = Paragraph::new(help_text)
+        .alignment(Alignment::Center)
+        .style(Style::new().fg(Color::Rgb(189, 189, 189)));
 
     // top layout
     f.render_widget(block, master_layout[0]);
@@ -91,7 +93,7 @@ fn get_status(model: &mut Model) -> Span {
                     .fg(if is_correct {
                         Color::Rgb(0, 255, 0)
                     } else {
-                        Color::Rgb(255, 0, 0)
+                        Color::Rgb(255, 95, 135)
                     })
                     .bg(Color::Rgb(0, 0, 0)),
             )

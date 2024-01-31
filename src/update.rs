@@ -129,7 +129,9 @@ pub fn handle_key_event(key_event: KeyEvent) -> Option<Message> {
         KeyCode::Char('n') if key_event.modifiers.contains(KeyModifiers::CONTROL) => {
             Some(Message::Reset)
         }
-        // KeyCode::Char('q') if key.modifiers.contains(KeyModifiers::CONTROL) => Some(Message::Quit),
+        KeyCode::Char('c') if key_event.modifiers.contains(KeyModifiers::CONTROL) => {
+            Some(Message::Quit)
+        }
         KeyCode::Esc => Some(Message::Quit),
         KeyCode::Char(letter) => {
             if letter.is_ascii_alphabetic() {
