@@ -1,9 +1,20 @@
+use std::collections::HashMap;
+
+pub type KeyboardHints = HashMap<char, LetterState>;
+
 #[derive(Debug, Default)]
 pub struct Model {
     pub wordle: String,
     pub active_guess: String,
     pub guesses: Vec<Vec<LetterStatus>>,
     pub running_state: RunningState,
+    pub keyboard_hints: KeyboardHints,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum GameResult {
+    CorrectGuess,
+    WrongGuess,
 }
 
 #[derive(Debug, Default, PartialEq, Eq)]
@@ -11,15 +22,17 @@ pub enum RunningState {
     #[default]
     Waiting,
     Calculating,
-    Over,
+    Over(GameResult),
     Done,
 }
 
-#[derive(PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Message {
     Listen(char),
     Erase,
-    Calculate,
+    CalculateStart,
+    AnimateGuess(usize, Vec<LetterStatus>),
+    CalculateEnd(Vec<LetterStatus>),
     Reset,
     Quit,
 }
@@ -34,6 +47,7 @@ pub struct LetterStatus {
 pub enum LetterState {
     #[default]
     Unknown,
+    NotPresent,
     Correct,
     Incorrect,
 }
