@@ -1,5 +1,8 @@
 # CHANGELOG
 
+### `v0.1.3`
+- Fix: Inlining wordle files with rust crate.
+
 ### `v0.1.2`
 - Removed changelog action from github workflow action
 
