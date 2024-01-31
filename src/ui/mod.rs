@@ -65,13 +65,13 @@ fn get_status(model: &mut Model) -> Span {
         RunningState::Waiting => Span::styled(
             format!("{}/6: Enter your guess", step),
             Style::default()
-                .fg(Color::Rgb(255, 255, 0))
+                .fg(Color::Rgb(189, 189, 189))
                 .bg(Color::Rgb(0, 0, 0)),
         ),
         RunningState::Calculating => Span::styled(
             format!("{}/6: Checking", step),
             Style::default()
-                .fg(Color::Rgb(255, 255, 0))
+                .fg(Color::Rgb(189, 189, 189))
                 .bg(Color::Rgb(0, 0, 0)),
         ),
         RunningState::Over(result) => {
