@@ -6,8 +6,10 @@ use crate::wordle::model::{KeyboardHints, LetterState};
 
 pub fn draw(frame: &mut Frame, rect: Rect, hints: &mut KeyboardHints) {
     let master_block = Block::new()
-        .title(Title::from("  WORDL  ").alignment(Alignment::Center))
-        .borders(Borders::ALL)
+        .title(Title::from("  https://github.com/palerdot/wordl-rs  ").alignment(Alignment::Center))
+        .borders(Borders::TOP)
+        // .border_style(Style::new().fg(Color::Rgb(255, 0, 0)))
+        .border_style(Style::new().fg(Color::Cyan))
         .style(Style::new().white().on_black().bg(Color::Rgb(0, 0, 0)));
 
     frame.render_widget(master_block, rect);
