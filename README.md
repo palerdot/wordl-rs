@@ -6,6 +6,8 @@
   <img src="./logo.png" alt="Wordl - Web like Terminal Wordle">
 </p>
 
+![Status](https://github.com/palerdot/wordl-rs/actions/workflows/rust.yml/badge.svg)
+
 > Terminal Wordle.
 
 **WORDL** aims to provide web like `Wordle` experience in the terminal, mainly
