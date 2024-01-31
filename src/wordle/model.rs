@@ -67,7 +67,7 @@ impl Model {
     pub fn new() -> Self {
         let valid_guesses = wordle::data::valid_guesses();
         let valid_wordles = wordle::data::valid_wordles();
-        let wordle = valid_guesses
+        let wordle = valid_wordles
             .choose(&mut rand::thread_rng())
             .unwrap()
             .to_string();
