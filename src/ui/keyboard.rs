@@ -2,9 +2,9 @@ use ratatui::widgets::block::Title;
 use ratatui::{prelude::*, widgets::*};
 
 use super::get_grid_color;
-use crate::wordle::model::LetterState;
+use crate::wordle::model::{KeyboardHints, LetterState};
 
-pub fn draw(frame: &mut Frame, rect: Rect) {
+pub fn draw(frame: &mut Frame, rect: Rect, hints: &mut KeyboardHints) {
     let master_block = Block::new()
         .title(Title::from("  WORDL  ").alignment(Alignment::Center))
         .borders(Borders::ALL)
@@ -30,14 +30,19 @@ pub fn draw(frame: &mut Frame, rect: Rect) {
                 height,
             };
 
-            let bg = get_grid_color(LetterState::Unknown);
+            let letter_hint = hints.get(&letter);
+            let letter_status = if letter_hint.is_some() {
+                letter_hint.unwrap().clone()
+            } else {
+                LetterState::Unknown
+            };
+
+            let bg = get_grid_color(letter_status);
 
             let block = Block::new()
                 .borders(Borders::ALL)
                 .border_type(BorderType::QuadrantOutside)
                 .border_style(Style::new().fg(Color::Rgb(0, 0, 0)))
-                // .padding(Padding::new(1, 1, 1, 1))
-                // .style(Style::new().white().on_black().bg(Color::Rgb(0, 0, 0)));
                 .style(Style::new().white().on_black().bg(bg).bold());
 
             frame.render_widget(

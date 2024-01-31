@@ -65,6 +65,9 @@ pub async fn update(model: &mut Model, msg: Message, event_handler: &EventHandle
             }
         }
         Message::CalculateEnd(guess) => {
+            // update keyboard hint
+            wordle::utils::update_keyboard_hints(&mut model.keyboard_hints, guess.clone());
+
             let is_correct_guess = wordle::utils::is_correct_guess(guess.clone());
             let is_attempts_over = model.guesses.len() == 6;
             let is_over = is_correct_guess || is_attempts_over;

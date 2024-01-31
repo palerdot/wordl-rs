@@ -28,7 +28,7 @@ pub fn view(model: &mut Model, f: &mut Frame) {
 
     if master_layout.len() == 2 {
         // keyboard layout
-        keyboard::draw(f, master_layout[1]);
+        keyboard::draw(f, master_layout[1], &mut model.keyboard_hints);
     }
 }
 
