@@ -28,6 +28,17 @@ pub async fn update(model: &mut Model, msg: Message, event_handler: &EventHandle
                 return;
             }
 
+            // we have to check if active guess is valid
+            let is_valid_active_guess = model.valid_wordles.contains(&model.active_guess)
+                || model.valid_guesses.contains(&model.active_guess);
+
+            if !is_valid_active_guess {
+                // reset active guess and abort
+                model.active_guess = "".into();
+
+                return;
+            }
+
             // first change state to calculating
             model.running_state = RunningState::Calculating;
             let guess =
