@@ -1,2 +1,4 @@
 # wordl-rs
-Rust terminal wordle similar to web
+
+`Terminal wordle`. Web like terminal wordle game with keyboard hints, slow reveal animations etc.
+
