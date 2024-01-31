@@ -44,22 +44,22 @@ pub async fn update(model: &mut Model, msg: Message, event_handler: &EventHandle
         }
 
         Message::AnimateGuess(guess_position, guess) => {
-            if guess_position >= guess.len() {
-                event_handler
-                    .send_delayed_message(0, Message::CalculateEnd(guess))
-                    .await;
-            } else {
-                let latest_position = model.guesses.len() - 1;
+            let latest_position = model.guesses.len() - 1;
 
-                if let Some(current) = model.guesses.get_mut(latest_position) {
-                    if let Some(guess_letter) = guess.get(guess_position) {
-                        current.push(guess_letter.clone());
-                        // once last letter is animated don't send delayed event
-                        let is_last_letter = guess_position + 1 == guess.len();
+            if let Some(current) = model.guesses.get_mut(latest_position) {
+                if let Some(guess_letter) = guess.get(guess_position) {
+                    current.push(guess_letter.clone());
+                    // once last letter is animated don't send delayed event
+                    let is_last_letter = guess_position + 1 == guess.len();
 
+                    if is_last_letter {
+                        event_handler
+                            .send_delayed_message(0, Message::CalculateEnd(guess))
+                            .await;
+                    } else {
                         event_handler
                             .send_delayed_message(
-                                if is_last_letter { 0 } else { 515 },
+                                515,
                                 Message::AnimateGuess(guess_position + 1, guess),
                             )
                             .await;
