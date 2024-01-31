@@ -112,6 +112,7 @@ pub fn update_keyboard_hints<'a>(
 mod tests {
     use crate::wordle::model::{LetterState, LetterStatus};
     use crate::wordle::utils::*;
+    use std::collections::HashMap;
 
     #[test]
     fn test_check() {
@@ -132,7 +133,7 @@ mod tests {
             },
             LetterStatus {
                 letter: 'l',
-                status: LetterState::Unknown,
+                status: LetterState::NotPresent,
             },
             LetterStatus {
                 letter: 'o',
@@ -194,5 +195,35 @@ mod tests {
         ];
 
         assert_eq!(is_correct_guess(not_correct_input), false);
+    }
+
+    #[test]
+    fn test_keyboard_hints() {
+        // WORDLE - PIOUS
+        let wordle = String::from("pious");
+        let mut hints: KeyboardHints = HashMap::new();
+        let statuses: Vec<LetterStatus> = check(wordle.clone(), "piano".into());
+
+        update_keyboard_hints(&mut hints, statuses);
+
+        // // all updated values should be correct
+        assert_eq!(*hints.get(&'p').unwrap(), LetterState::Correct);
+        assert_eq!(*hints.get(&'i').unwrap(), LetterState::Correct);
+        assert_eq!(*hints.get(&'a').unwrap(), LetterState::NotPresent);
+        assert_eq!(*hints.get(&'n').unwrap(), LetterState::NotPresent);
+        assert_eq!(*hints.get(&'o').unwrap(), LetterState::Incorrect);
+
+        // existing values should not be present
+        assert_eq!(hints.get(&'x'), None);
+
+        // check new guess word where already correct letter is now in incorrect position; hint
+        // should show 'correct' because it was correct once
+        let statuses: Vec<LetterStatus> = check(wordle.clone(), "smile".into());
+
+        // update hints again
+        update_keyboard_hints(&mut hints, statuses);
+
+        // i => already correct, it should still be correct
+        assert_eq!(*hints.get(&'i').unwrap(), LetterState::Correct);
     }
 }
