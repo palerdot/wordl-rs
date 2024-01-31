@@ -1,6 +1,9 @@
 use ratatui::widgets::block::Title;
 use ratatui::{prelude::*, widgets::*};
 
+use super::get_grid_color;
+use crate::wordle::model::LetterState;
+
 pub fn draw(frame: &mut Frame, rect: Rect) {
     let master_block = Block::new()
         .title(Title::from("  WORDL  ").alignment(Alignment::Center))
@@ -26,16 +29,21 @@ pub fn draw(frame: &mut Frame, rect: Rect) {
                 width,
                 height,
             };
+
+            let bg = get_grid_color(LetterState::Unknown);
+
             let block = Block::new()
                 .borders(Borders::ALL)
-                .border_type(BorderType::Rounded)
-                .padding(Padding::new(0, 0, 0, 0))
-                .border_style(Style::new().fg(Color::Rgb(255, 0, 0)))
-                .style(Style::new().white().on_black().bg(Color::Rgb(0, 0, 0)));
+                .border_type(BorderType::QuadrantOutside)
+                .border_style(Style::new().fg(Color::Rgb(0, 0, 0)))
+                // .padding(Padding::new(1, 1, 1, 1))
+                // .style(Style::new().white().on_black().bg(Color::Rgb(0, 0, 0)));
+                .style(Style::new().white().on_black().bg(bg).bold());
 
             frame.render_widget(
                 Paragraph::new(format!("{}", letter.to_string()))
                     .block(block)
+                    .style(Style::new().white().on_black().bg(bg))
                     .alignment(Alignment::Center),
                 area,
             );

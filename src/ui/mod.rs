@@ -1,10 +1,10 @@
 use ratatui::{
-    prelude::{Alignment, Frame, Span},
-    style::{Color, Style, Stylize},
+    prelude::{Alignment, Color, Frame, Span},
+    style::{Style, Stylize},
     widgets::Block,
 };
 
-use crate::wordle::model::{GameResult, Model, RunningState};
+use crate::wordle::model::{GameResult, LetterState, Model, RunningState};
 
 mod grid;
 mod keyboard;
@@ -78,5 +78,15 @@ fn get_status(model: &mut Model) -> Span {
                 .fg(Color::Rgb(0, 255, 0))
                 .bg(Color::Rgb(0, 0, 0)),
         ),
+    }
+}
+
+// helper function to get grid color
+pub fn get_grid_color(letter_state: LetterState) -> Color {
+    match letter_state {
+        LetterState::Correct => Color::Rgb(0, 135, 0),
+        LetterState::Incorrect => Color::Rgb(255, 175, 0),
+        LetterState::NotPresent => Color::Rgb(88, 88, 88),
+        LetterState::Unknown => Color::Rgb(48, 48, 48),
     }
 }

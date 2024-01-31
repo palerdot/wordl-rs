@@ -2,6 +2,8 @@
 use crate::wordle::model::{LetterState, LetterStatus, Model};
 use ratatui::{prelude::*, widgets::*};
 
+use super::get_grid_color;
+
 pub fn draw(frame: &mut Frame, rect: Rect, model: &mut Model) {
     // draw empty grid
     for row in 0..=5 {
@@ -71,12 +73,7 @@ fn render(frame: &mut Frame, rect: Rect, grid: Grid) {
         height,
     };
 
-    let bg = match grid.letter_status.status {
-        LetterState::Correct => Color::Rgb(0, 135, 0),
-        LetterState::Incorrect => Color::Rgb(255, 175, 0),
-        LetterState::NotPresent => Color::Rgb(88, 88, 88),
-        LetterState::Unknown => Color::Rgb(48, 48, 48),
-    };
+    let bg = get_grid_color(grid.letter_status.status);
 
     let block = Block::new()
         .borders(Borders::ALL)
