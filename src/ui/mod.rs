@@ -13,7 +13,7 @@ mod layout;
 // [ELM VIEW] view is a function of model
 pub fn view(model: &mut Model, f: &mut Frame) {
     let block = Block::default()
-        .title(format!("WORDL: {}", model.wordle,))
+        // .title(format!("{}", model.wordle,))
         .title_alignment(Alignment::Center)
         .border_style(Style::default().fg(Color::White))
         .style(Style::default().white().bg(Color::Rgb(0, 0, 0)))
@@ -37,13 +37,13 @@ fn get_status(model: &mut Model) -> Span {
 
     match &model.running_state {
         RunningState::Waiting => Span::styled(
-            format!("{}/6 - Enter your guess", step),
+            format!("{}/6: Enter your guess", step),
             Style::default()
                 .fg(Color::Rgb(255, 255, 0))
                 .bg(Color::Rgb(0, 0, 0)),
         ),
         RunningState::Calculating => Span::styled(
-            format!("{}/6 - Checking", step),
+            format!("{}/6: Checking", step),
             Style::default()
                 .fg(Color::Rgb(255, 255, 0))
                 .bg(Color::Rgb(0, 0, 0)),

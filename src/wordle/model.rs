@@ -81,4 +81,16 @@ impl Model {
             ..default_model
         }
     }
+
+    pub fn reset(&mut self) {
+        self.wordle = self
+            .valid_wordles
+            .choose(&mut rand::thread_rng())
+            .unwrap()
+            .to_string();
+        self.active_guess = "".into();
+        self.guesses.clear();
+        self.keyboard_hints.clear();
+        self.running_state = RunningState::Waiting;
+    }
 }

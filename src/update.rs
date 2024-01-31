@@ -107,7 +107,16 @@ pub async fn update(model: &mut Model, msg: Message, event_handler: &EventHandle
                 model.active_guess.pop();
             }
         }
-        Message::Reset => {}
+        Message::Reset => {
+            // reset only if the game is in over stage
+            match model.running_state {
+                RunningState::Over(_) => {
+                    // we will reset only if the game is over
+                    model.reset();
+                }
+                _ => {}
+            }
+        }
         Message::Quit => {
             model.running_state = RunningState::Done;
         }
