@@ -8,7 +8,7 @@ repository = "https://github.com/palerdot/wordl-rs"
 documentation = "https://github.com/palerdot/wordl-rs"
 homepage = "https://github.com/palerdot/wordl-rs"
 readme = "README.md"
-keywords = ["wordle", "terminal", "games", "command line"]
+keywords = ["wordle", "terminal", "games"]
 categories = ["command-line-utilities", "games"]
 exclude = [
   "logo.png",
