@@ -24,7 +24,7 @@ Install from [Cargo](https://doc.rust-lang.org/cargo/getting-started/installatio
 cargo install wordl
 ```
 
-Precompiled binaries are available in [Latest Releases page](https://github.com/palerdot/wordl-rs/releases/latest). Please note, the precompiled binaries are **not signed**. For example, in `MacOS`, you have to manually allow running the binary in `Security & Privacy` settings.;
+Precompiled binaries are available in [Latest Releases page](https://github.com/palerdot/wordl-rs/releases/latest). Please note, the precompiled binaries are **not signed**. For example, in `MacOS`, you have to manually allow running the binary in `Security & Privacy` settings.
 
 ### About
 
