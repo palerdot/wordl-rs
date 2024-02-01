@@ -5,8 +5,19 @@ use super::get_grid_color;
 use crate::wordle::model::{KeyboardHints, LetterState};
 
 pub fn draw(frame: &mut Frame, rect: Rect, hints: &mut KeyboardHints) {
+    let github_link = String::from("https://github.com/palerdot/wordl-rs");
+    let version = env!("CARGO_PKG_VERSION");
+
+    let version_string = if version.is_empty() {
+        "".into()
+    } else {
+        format!(" (v{})", version)
+    };
+
+    let title_text = format!(" {}{} ", github_link, version_string);
+
     let master_block = Block::new()
-        .title(Title::from("  https://github.com/palerdot/wordl-rs  ").alignment(Alignment::Center))
+        .title(Title::from(title_text).alignment(Alignment::Center))
         .borders(Borders::TOP)
         // .border_style(Style::new().fg(Color::Rgb(255, 0, 0)))
         .border_style(Style::new().fg(Color::Cyan))
