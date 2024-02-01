@@ -26,6 +26,16 @@ cargo install wordl
 
 Precompiled binaries are available in [Latest Releases page](https://github.com/palerdot/wordl-rs/releases/latest). Please note, the precompiled binaries are **not signed**. For example, in `MacOS`, you have to manually allow running the binary in `Security & Privacy` settings.
 
+### Update
+
+Update installed binary with [cargo-update](https://github.com/nabijaczleweli/cargo-update) like
+
+```
+cargo install-update wordl
+```
+
+If you don't want to install `cargo-update`, you can manually uninstall and install the latest binary from cargo.
+
 ### About
 
 Rules are pretty simple.
