@@ -10,6 +10,11 @@ homepage = "https://github.com/palerdot/wordl-rs"
 readme = "README.md"
 keywords = ["wordle", "terminal", "games", "command line"]
 categories = ["command-line-utilities", "games"]
+exclude = [
+  "logo.png",
+  "wordl.gif",
+  "wordl.png",
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
