@@ -89,17 +89,27 @@ pub fn update_keyboard_hints<'a>(
         } else {
             // key is present; based on the status we have to match stuff
             match status.status {
-                LetterState::Unknown | LetterState::NotPresent | LetterState::Correct => {
-                    hints.insert(status.letter.clone(), status.status.clone());
-                }
                 LetterState::Incorrect => {
-                    // incorrect is a special case; if the existing value is already "correct" we
-                    // have to leave as is; else just update the value
+                    // we will update only if it is not already correct
                     if let Some(current_status) = hints.get(&status.letter) {
                         if *current_status != LetterState::Correct {
                             hints.insert(status.letter.clone(), status.status.clone());
                         }
                     }
+                }
+                LetterState::Unknown | LetterState::NotPresent => {
+                    // we will update only if it not in Correct/Incorrect stage
+                    if let Some(current_status) = hints.get(&status.letter) {
+                        if *current_status != LetterState::Correct
+                            && *current_status != LetterState::Incorrect
+                        {
+                            hints.insert(status.letter.clone(), status.status.clone());
+                        }
+                    }
+                }
+                // correct is always correct!
+                LetterState::Correct => {
+                    hints.insert(status.letter.clone(), LetterState::Correct);
                 }
             }
         }
@@ -225,5 +235,20 @@ mod tests {
 
         // i => already correct, it should still be correct
         assert_eq!(*hints.get(&'i').unwrap(), LetterState::Correct);
+
+        // NEW WORDLE
+        // RESET everything
+        let wordle = "below";
+        hints.clear();
+
+        // check new wordle
+        // WORDLE - below; Word - Hello
+        let statuses: Vec<LetterStatus> = check(wordle.into(), "hello".into());
+
+        // update hints again
+        update_keyboard_hints(&mut hints, statuses);
+
+        // i => already correct, it should still be correct
+        assert_eq!(*hints.get(&'l').unwrap(), LetterState::Correct);
     }
 }
