@@ -1,5 +1,8 @@
 # CHANGELOG
 
+### v0.1.5
+- Fix: Handle panic when terminal does not have minimum height for keyboard hints.
+
 ### v0.1.4
 - Fix: keyboard hints when multiple letters are present in the guess
 - Show version string in the UI
