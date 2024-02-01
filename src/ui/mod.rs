@@ -1,7 +1,7 @@
 use ratatui::{
     prelude::{Alignment, Color, Frame, Rect, Span},
     style::{Style, Stylize},
-    widgets::{block::Position, Block, Paragraph},
+    widgets::{block::Position, Block, Paragraph, Wrap},
 };
 
 use crate::wordle::model::{GameResult, LetterState, Model, RunningState};
@@ -35,7 +35,10 @@ pub fn view(model: &mut Model, f: &mut Frame) {
     };
     let help_text_block = Paragraph::new(help_text)
         .alignment(Alignment::Center)
+        .wrap(Wrap { trim: true })
         .style(Style::new().fg(Color::Rgb(189, 189, 189)));
+
+    let has_min_height = master_layout.len() == 2;
 
     // top layout
     f.render_widget(block, master_layout[0]);
@@ -46,13 +49,13 @@ pub fn view(model: &mut Model, f: &mut Frame) {
         help_text_block,
         Rect {
             x: 0,
-            y: master_layout[0].height - 1,
-            height: 5,
+            y: master_layout[0].height - if has_min_height { 1 } else { 3 },
+            height: 2,
             width: f.size().width - 5, // ..master_layout[0]
         },
     );
 
-    if master_layout.len() == 2 {
+    if has_min_height {
         // keyboard layout
         keyboard::draw(f, master_layout[1], &mut model.keyboard_hints);
     }
