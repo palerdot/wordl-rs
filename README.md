@@ -7,6 +7,7 @@
 </p>
 
 ![Status](https://github.com/palerdot/wordl-rs/actions/workflows/rust.yml/badge.svg)
+![Crates.io Version](https://img.shields.io/crates/v/wordl)
 
 > Terminal Wordle.
 
