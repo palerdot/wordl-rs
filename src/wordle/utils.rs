@@ -37,42 +37,39 @@ pub fn check(wordle: String, guess: String) -> Vec<LetterStatus> {
             } else {
                 // CASE 2: letter is present but not in the right position
                 // first let us find character occurences in the wordle
-                let wordle_occurences =
-                    wordle_letters.clone().into_iter().fold(0, |acc, letter| {
-                        if letter == guess_letter {
-                            acc + 1
-                        } else {
-                            acc
-                        }
-                    });
+                let wordle_indices = get_all_letter_indices(guess_letter, wordle.clone());
+                let guess_indices = get_all_letter_indices(guess_letter, guess.clone());
 
-                let guess_occurences = guess_letters
-                    .clone()
-                    .get(0..position + 1)
-                    .unwrap()
-                    .into_iter()
-                    .fold(
-                        0,
-                        |acc, &letter| {
-                            if letter == guess_letter {
-                                acc + 1
-                            } else {
-                                acc
-                            }
-                        },
-                    );
+                let coloring_chances = wordle_indices.len();
+                let future_start = guess_indices.partition_point(|&i| i == position);
+                let future_occurences = guess_indices[future_start..].iter();
+                let future_chances = future_occurences.len();
 
-                // (taking occurences till current index) wordle occurences should be greater than or equal to guess letter occurences
-                if wordle_occurences >= guess_occurences {
-                    output.push(LetterStatus {
-                        letter: guess_letter,
-                        status: LetterState::Incorrect,
-                    })
+                // eg: e: ennui [0] <-- where [2,4]
+                // eg: e: drove [4] <-- evoke [0,4]
+                //
+                // should we leave coloring this time?
+                let should_leave = future_chances >= coloring_chances;
+                if !should_leave {
+                    let is_incorrect = !wordle_indices.contains(&position);
+                    if is_incorrect {
+                        output.push(LetterStatus {
+                            letter: guess_letter,
+                            status: LetterState::Incorrect,
+                        });
+                    } else {
+                        output.push(LetterStatus {
+                            letter: guess_letter,
+                            status: LetterState::NotPresent,
+                        });
+                    }
                 } else {
+                    // we are leaving this letter out as there are matches in the future (word
+                    // occurence)
                     output.push(LetterStatus {
                         letter: guess_letter,
                         status: LetterState::NotPresent,
-                    })
+                    });
                 }
             }
         }
@@ -126,11 +123,41 @@ pub fn update_keyboard_hints<'a>(
     hints
 }
 
+fn get_all_letter_indices(letter: char, word: String) -> Vec<usize> {
+    let mut output: Vec<usize> = Vec::new();
+
+    word.chars()
+        .enumerate()
+        .into_iter()
+        .for_each(|(index, word_letter)| {
+            if word_letter == letter {
+                output.push(index);
+            }
+        });
+
+    output
+}
+
 #[cfg(test)]
 mod tests {
     use crate::wordle::model::{LetterState, LetterStatus};
     use crate::wordle::utils::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn test_letter_indices() {
+        let output = get_all_letter_indices('e', "ennui".into());
+        assert_eq!(output, vec![0]);
+
+        let output = get_all_letter_indices('e', "where".into());
+        assert_eq!(output, vec![2, 4]);
+
+        let output = get_all_letter_indices('e', "drove".into());
+        assert_eq!(output, vec![4]);
+
+        let output = get_all_letter_indices('e', "evoke".into());
+        assert_eq!(output, vec![0, 4]);
+    }
 
     #[test]
     fn test_status_random() {
@@ -147,7 +174,7 @@ mod tests {
             },
             LetterStatus {
                 letter: 'e',
-                status: LetterState::Incorrect,
+                status: LetterState::NotPresent,
             },
             LetterStatus {
                 letter: 'r',
@@ -155,7 +182,35 @@ mod tests {
             },
             LetterStatus {
                 letter: 'e',
+                status: LetterState::Incorrect,
+            },
+        ];
+
+        assert_eq!(output, expected);
+
+        // test another
+        let output = check("drove".into(), "evoke".into());
+
+        let expected: Vec<LetterStatus> = vec![
+            LetterStatus {
+                letter: 'e',
                 status: LetterState::NotPresent,
+            },
+            LetterStatus {
+                letter: 'v',
+                status: LetterState::Incorrect,
+            },
+            LetterStatus {
+                letter: 'o',
+                status: LetterState::Correct,
+            },
+            LetterStatus {
+                letter: 'k',
+                status: LetterState::NotPresent,
+            },
+            LetterStatus {
+                letter: 'e',
+                status: LetterState::Correct,
             },
         ];
 
