@@ -37,24 +37,39 @@ pub fn check(wordle: String, guess: String) -> Vec<LetterStatus> {
             } else {
                 // CASE 2: letter is present but not in the right position
                 // first let us find character occurences in the wordle
-                let wordle_occurences =
-                    wordle_letters.clone().into_iter().fold(0, |acc, letter| {
-                        if letter == guess_letter {
-                            acc + 1
-                        } else {
-                            acc
-                        }
-                    });
+                let wordle_occurences = wordle_letters
+                    .clone()
+                    .get(0..position + 1)
+                    .unwrap()
+                    .into_iter()
+                    .fold(
+                        0,
+                        |acc, &letter| {
+                            if letter == guess_letter {
+                                acc + 1
+                            } else {
+                                acc
+                            }
+                        },
+                    );
 
-                let guess_occurences = guess_letters.clone().into_iter().fold(0, |acc, letter| {
-                    if letter == guess_letter {
-                        acc + 1
-                    } else {
-                        acc
-                    }
-                });
+                let guess_occurences = guess_letters
+                    .clone()
+                    .get(0..position + 1)
+                    .unwrap()
+                    .into_iter()
+                    .fold(
+                        0,
+                        |acc, &letter| {
+                            if letter == guess_letter {
+                                acc + 1
+                            } else {
+                                acc
+                            }
+                        },
+                    );
 
-                // wordle occurences should be greater than or equal to guess letter occurences
+                // (taking occurences till current index) wordle occurences should be greater than or equal to guess letter occurences
                 if wordle_occurences >= guess_occurences {
                     output.push(LetterStatus {
                         letter: guess_letter,
@@ -125,31 +140,33 @@ mod tests {
     use std::collections::HashMap;
 
     #[test]
-    fn test_check() {
-        let output = check("helio".into(), "hello".into());
+    fn test_status_random() {
+        let output = check("ennui".into(), "where".into());
 
         let expected: Vec<LetterStatus> = vec![
             LetterStatus {
-                letter: 'h',
-                status: LetterState::Correct,
-            },
-            LetterStatus {
-                letter: 'e',
-                status: LetterState::Correct,
-            },
-            LetterStatus {
-                letter: 'l',
-                status: LetterState::Correct,
-            },
-            LetterStatus {
-                letter: 'l',
+                letter: 'w',
                 status: LetterState::NotPresent,
             },
             LetterStatus {
-                letter: 'o',
-                status: LetterState::Correct,
+                letter: 'h',
+                status: LetterState::NotPresent,
+            },
+            LetterStatus {
+                letter: 'e',
+                status: LetterState::Incorrect,
+            },
+            LetterStatus {
+                letter: 'r',
+                status: LetterState::NotPresent,
+            },
+            LetterStatus {
+                letter: 'e',
+                status: LetterState::NotPresent,
             },
         ];
+
+        println!("{:?} --> ", output);
 
         assert_eq!(output, expected);
     }
