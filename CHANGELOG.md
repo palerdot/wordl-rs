@@ -1,5 +1,8 @@
 # CHANGELOG
 
+### v0.1.6
+- Fix: Handle edge cases in guess letter status check
+
 ### v0.1.5
 - Fix: Handle panic when terminal does not have minimum height for keyboard hints.
 

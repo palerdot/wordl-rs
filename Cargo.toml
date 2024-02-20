@@ -1,6 +1,6 @@
 [package]
 name = "wordl"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 description = "Terminal Wordle game. Web like with keyboard hints and slow reveal animations."
 license = "GPL-3.0"
