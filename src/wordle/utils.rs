@@ -37,21 +37,14 @@ pub fn check(wordle: String, guess: String) -> Vec<LetterStatus> {
             } else {
                 // CASE 2: letter is present but not in the right position
                 // first let us find character occurences in the wordle
-                let wordle_occurences = wordle_letters
-                    .clone()
-                    .get(0..position + 1)
-                    .unwrap()
-                    .into_iter()
-                    .fold(
-                        0,
-                        |acc, &letter| {
-                            if letter == guess_letter {
-                                acc + 1
-                            } else {
-                                acc
-                            }
-                        },
-                    );
+                let wordle_occurences =
+                    wordle_letters.clone().into_iter().fold(0, |acc, letter| {
+                        if letter == guess_letter {
+                            acc + 1
+                        } else {
+                            acc
+                        }
+                    });
 
                 let guess_occurences = guess_letters
                     .clone()
@@ -165,8 +158,6 @@ mod tests {
                 status: LetterState::NotPresent,
             },
         ];
-
-        println!("{:?} --> ", output);
 
         assert_eq!(output, expected);
     }
