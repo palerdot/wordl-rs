@@ -1,5 +1,8 @@
 # CHANGELOG
 
+### v0.2.0
+- Fix: Handle edge case in guess letter check when the match already happened initially. Fixes - https://github.com/palerdot/wordl-rs/issues/2
+
 ### v0.1.6
 - Fix: Handle edge cases in guess letter status check
 
