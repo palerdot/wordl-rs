@@ -40,6 +40,8 @@ pub fn check(wordle: String, guess: String) -> Vec<LetterStatus> {
                 let wordle_indices = get_all_letter_indices(guess_letter, wordle.clone());
                 let guess_indices = get_all_letter_indices(guess_letter, guess.clone());
 
+                let matches = intersection_match(wordle_indices.clone(), guess_indices.clone());
+
                 let coloring_chances = wordle_indices.len();
                 let future_start = guess_indices.partition_point(|&i| i == position);
                 let future_occurences = guess_indices[future_start..].iter();
@@ -49,7 +51,9 @@ pub fn check(wordle: String, guess: String) -> Vec<LetterStatus> {
                 // eg: e: drove [4] <-- evoke [0,4]
                 //
                 // should we leave coloring this time?
-                let should_leave = future_chances >= coloring_chances;
+                let match_completed = coloring_chances == matches.len();
+
+                let should_leave = match_completed || future_chances >= coloring_chances;
                 if !should_leave {
                     let is_incorrect = !wordle_indices.contains(&position);
                     if is_incorrect {
@@ -138,11 +142,35 @@ fn get_all_letter_indices(letter: char, word: String) -> Vec<usize> {
     output
 }
 
+fn intersection_match(wordle: Vec<usize>, guess: Vec<usize>) -> Vec<usize> {
+    let mut output: Vec<usize> = Vec::new();
+
+    wordle.into_iter().for_each(|i| {
+        if guess.contains(&i) {
+            output.push(i.clone());
+        }
+    });
+
+    output
+}
+
 #[cfg(test)]
 mod tests {
     use crate::wordle::model::{LetterState, LetterStatus};
     use crate::wordle::utils::*;
     use std::collections::HashMap;
+
+    #[test]
+    fn test_intersection_match() {
+        let output = intersection_match(vec![0, 2], vec![2]);
+        assert_eq!(output, vec![2]);
+
+        let output = intersection_match(vec![0, 2], vec![3]);
+        assert_eq!(output, vec![]);
+
+        let output = intersection_match(vec![1], vec![1, 3]);
+        assert_eq!(output, vec![1]);
+    }
 
     #[test]
     fn test_letter_indices() {
@@ -211,6 +239,34 @@ mod tests {
             LetterStatus {
                 letter: 'e',
                 status: LetterState::Correct,
+            },
+        ];
+
+        assert_eq!(output, expected);
+
+        // test another
+        let output = check("milky".into(), "livid".into());
+
+        let expected: Vec<LetterStatus> = vec![
+            LetterStatus {
+                letter: 'l',
+                status: LetterState::Incorrect,
+            },
+            LetterStatus {
+                letter: 'i',
+                status: LetterState::Correct,
+            },
+            LetterStatus {
+                letter: 'v',
+                status: LetterState::NotPresent,
+            },
+            LetterStatus {
+                letter: 'i',
+                status: LetterState::NotPresent,
+            },
+            LetterStatus {
+                letter: 'd',
+                status: LetterState::NotPresent,
             },
         ];
 
