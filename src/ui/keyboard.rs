@@ -61,7 +61,13 @@ pub fn draw(frame: &mut Frame, rect: Rect, hints: &mut KeyboardHints) {
             frame.render_widget(
                 Paragraph::new(format!("{}", letter.to_string()))
                     .block(block)
-                    .style(Style::new().white().on_black().bg(bg))
+                    .style(
+                        Style::new()
+                            .white()
+                            .on_black()
+                            .bg(bg)
+                            .fg(Color::Rgb(255, 255, 255)),
+                    )
                     .alignment(Alignment::Center),
                 area,
             );

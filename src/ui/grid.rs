@@ -81,12 +81,25 @@ fn render(frame: &mut Frame, rect: Rect, grid: Grid) {
         .border_style(Style::new().fg(Color::Rgb(0, 0, 0)))
         // .padding(Padding::new(1, 1, 1, 1))
         // .style(Style::new().white().on_black().bg(Color::Rgb(0, 0, 0)));
-        .style(Style::new().white().on_black().bg(bg).bold());
+        .style(
+            Style::new()
+                .white()
+                .on_black()
+                .bg(bg)
+                .fg(Color::Rgb(255, 255, 255))
+                .bold(),
+        );
 
     frame.render_widget(
         Paragraph::new(format!("{}", letter.to_string()))
             .block(block)
-            .style(Style::new().white().on_black().bg(bg))
+            .style(
+                Style::new()
+                    .white()
+                    .on_black()
+                    .bg(bg)
+                    .fg(Color::Rgb(255, 255, 255)),
+            )
             .alignment(Alignment::Center),
         area,
     );
