@@ -1,5 +1,8 @@
 # CHANGELOG
 
+### v0.3.0
+- Fix: White color text. Previously terminal theme's text color is used for text color.
+
 ### v0.2.0
 - Fix: Handle edge case in guess letter check when the match already happened initially. Fixes - https://github.com/palerdot/wordl-rs/issues/2
 
